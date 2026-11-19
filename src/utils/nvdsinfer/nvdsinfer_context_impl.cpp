@@ -528,6 +528,11 @@ NvDsInferStatus InferPreprocessor::transform(
             "Failed to add cudaStream callback for returning input buffers");
     }
 
+    /* Check the kernel launches after the callback is queued, so that the
+     * input buffers are still returned on failure. */
+    RETURN_CUDA_ERR(cudaGetLastError(),
+        "Failed to launch the pre-processing kernel");
+
     /* Record CUDA event to synchronize the completion of pre-processing
      * kernels. */
     RETURN_CUDA_ERR(
